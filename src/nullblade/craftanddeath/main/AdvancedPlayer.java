@@ -45,9 +45,9 @@ public class AdvancedPlayer {
 
         this.player = player;
 
-        File f = new File("simpleHardcore/players/" + player.getUniqueId().toString() + ".yml");
+        File f = new File("craftAndDeath/players/" + player.getUniqueId().toString() + ".yml");
         if (!f.exists()) {
-            new File("simpleHardcore/players").mkdirs();
+            new File("craftAndDeath/players").mkdirs();
             try {
                 f.createNewFile();
             } catch (IOException e) {
@@ -102,7 +102,7 @@ public class AdvancedPlayer {
     }
 
     public void save() {
-        File f = new File("simpleHardcore/players/" + player.getUniqueId().toString() + ".yml");
+        File f = new File("craftAndDeath/players/" + player.getUniqueId().toString() + ".yml");
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(f);
 

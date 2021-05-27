@@ -308,21 +308,4 @@ public class TemperatureAndThirst implements Listener {
                 break;
         }
     }
-
-    @EventHandler
-    public void onDeath(PlayerDeathEvent e) {
-        AdvancedPlayer p = Main.getInstance().getPlayer(e.getEntity().getUniqueId());
-        if (Calendar.getInstance().getTimeInMillis() - p.lastDeathOn > 25) {
-            p.lastDeathOn = Calendar.getInstance().getTimeInMillis();
-            p.thirst = 100;
-            p.temperature = 36.6d;
-            p.envTemperature.set(30d);
-            p.oldTimer = -1;
-            for (PotionEffect e2 : p.player.getActivePotionEffects()) {
-                p.player.removePotionEffect(e2.getType());
-            }
-        } else {
-            e.setDeathMessage("");
-        }
-    }
 }

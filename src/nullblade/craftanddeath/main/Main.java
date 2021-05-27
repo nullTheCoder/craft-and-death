@@ -13,10 +13,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -86,5 +89,26 @@ public class Main extends JavaPlugin implements Listener {
     }
     public AdvancedPlayer getPlayer(Player player) {
         return players.get(player.getUniqueId());
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent e) {
+        AdvancedPlayer p = Main.getInstance().getPlayer(e.getEntity().getUniqueId());
+        if (Calendar.getInstance().getTimeInMillis() - p.lastDeathOn < 100) {
+            e.setDeathMessage("");
+        } else {
+            p.lastDeathOn = Calendar.getInstance().getTimeInMillis();
+            p.thirst = 100;
+            p.temperature = 36.6d;
+            p.envTemperature.set(30d);
+            Bukkit.getScheduler().cancelTask(p.oldTimer);
+            p.oldTimer = -1;
+            for (PotionEffect e2 : p.player.getActivePotionEffects()) {
+                p.player.removePotionEffect(e2.getType());
+            }
+            Bukkit.getScheduler().runTaskLater(this, () -> {
+                p.player.kickPlayer("§cYou died (you may rejoin now)");
+            }, 1);
+        }
     }
 }

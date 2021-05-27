@@ -133,7 +133,7 @@ public class DamageManager implements Listener { // to add custom armour with cu
                 p.setAbsorptionHearts((p.getAbsorptionHearts() - d));
                 damage -= d;
                 l.removePotionEffect(PotionEffectType.BLINDNESS);
-                l.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 1));
+                l.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 200, 1));
 
                 AdvancedPlayer pl = Main.getInstance().getPlayer(p.getUniqueID());
 
@@ -145,7 +145,7 @@ public class DamageManager implements Listener { // to add custom armour with cu
                 }, (int) (5 * damage) + 15).getTaskId();
 
                 if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
-                    l.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (10 * damage), 1));
+                    l.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 * damage), 1));
                 }
                 l.setHealth(l.getHealth() - Math.min(damage, l.getHealth()));
             }
