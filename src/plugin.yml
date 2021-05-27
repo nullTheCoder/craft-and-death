@@ -1,0 +1,22 @@
+main: nullblade.craftanddeath.main.Main
+version: 0.1
+name: CraftAndDeath
+
+commands:
+  cgive:
+    description: Gives custom item to player
+    permission: craftAndDeath.give
+    aliases: [cg]
+    usage: /<command> <player> <item> [amount]
+  recipebook:
+    description: Gives custom item to player
+    permission: craftAndDeath.recipes
+    aliases: [rb, crafts, craft, crafting, recipe, recipes, how_do_i_make_something]
+    usage: /<command>
+
+permissions:
+  craftAndDeath.default:
+    description: default
+    default: true
+    children:
+      craftAndDeath.recipes: true
