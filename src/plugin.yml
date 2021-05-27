@@ -7,7 +7,7 @@ commands:
     description: Gives custom item to player
     permission: craftAndDeath.give
     aliases: [cg]
-    usage: /<command> <player> <item> [amount]
+    usage: /<command> <item>
   recipebook:
     description: Gives custom item to player
     permission: craftAndDeath.recipes

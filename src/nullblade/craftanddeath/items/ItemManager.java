@@ -46,7 +46,12 @@ public class ItemManager {
     }
 
     public ItemStack get(String id) {
-        return items.get(id).item;
+        CustomItem item = items.get(id);
+        if (item == null ){
+            return null;
+        } else {
+            return item.item;
+        }
     }
 
     public static String get(ItemStack i) {
