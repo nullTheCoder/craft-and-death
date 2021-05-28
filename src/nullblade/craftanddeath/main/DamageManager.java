@@ -116,9 +116,9 @@ public class DamageManager implements Listener { // to add custom armour with cu
             }
 
             if (l.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
-                for (PotionEffect p : l.getActivePotionEffects()) {
-                    if (p.getType() == PotionEffectType.DAMAGE_RESISTANCE) {
-                        defence *= 1 + (0.2 * p.getAmplifier());
+                for (PotionEffect po : l.getActivePotionEffects()) {
+                    if (po.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
+                        defence *= 1.2 + (0.2 * po.getAmplifier());
                     }
                 }
             }
@@ -161,8 +161,8 @@ public class DamageManager implements Listener { // to add custom armour with cu
 
         if (p.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
             for (PotionEffect po : p.getActivePotionEffects()) {
-                if (po.getType() == PotionEffectType.DAMAGE_RESISTANCE) {
-                    defence *= 1 + (0.2 * po.getAmplifier());
+                if (po.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
+                    defence *= 1.2 + (0.2 * po.getAmplifier());
                 }
             }
         }
