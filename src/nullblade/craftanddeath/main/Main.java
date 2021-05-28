@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
@@ -110,5 +111,19 @@ public class Main extends JavaPlugin implements Listener {
                 p.player.kickPlayer("§cYou died (you may rejoin now)");
             }, 1);
         }
+    }
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e) {
+        AdvancedPlayer p = nullblade.craftanddeath.main.Main.getInstance().getPlayer(e.getPlayer().getUniqueId());
+        p.lastDeathOn = Calendar.getInstance().getTimeInMillis();
+        p.thirst = 100;
+        p.temperature = 36.6d;
+        p.envTemperature.set(30d);
+        Bukkit.getScheduler().cancelTask(p.oldTimer);
+        p.oldTimer = -1;
+        for (PotionEffect e2 : p.player.getActivePotionEffects()) {
+            p.player.removePotionEffect(e2.getType());
+        }
+
     }
 }
