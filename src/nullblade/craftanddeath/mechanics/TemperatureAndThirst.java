@@ -15,8 +15,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.NumberConversions;
 
-import java.util.Calendar;
-
 public class TemperatureAndThirst implements Listener {
     public TemperatureAndThirst() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
@@ -26,6 +24,9 @@ public class TemperatureAndThirst implements Listener {
         // thirst effects timer (checks for player's thirst and applies effects) and also for refilling thirst with water blocks
         Bukkit.getScheduler().runTaskTimer(Main.getInstance(), () -> {
             for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.isDead()) {
+                    continue;
+                }
                 AdvancedPlayer a = Main.getInstance().getPlayer(p.getUniqueId());
                 if (p.getWorld().getBlockAt(p.getLocation()).getType() == Material.STATIONARY_WATER) {
                     a.thirst += 40;
@@ -60,7 +61,10 @@ public class TemperatureAndThirst implements Listener {
         // temperature
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> { //  async temperature calculation timer
-                for (Player p : Bukkit.getOnlinePlayers()) {                         //  making it not async will lag out the server a pretty bit every (probably)
+                for (Player p : Bukkit.getOnlinePlayers()) {//  making it not async will lag out the server a pretty bit every (probably)
+                    if (p.isDead()) {
+                        continue;
+                    }
                     float total = 0;
                     float endDivider = 0;
                     for (int x = -8 ; x < 8 ; x++) {
@@ -195,6 +199,9 @@ public class TemperatureAndThirst implements Listener {
 
         Bukkit.getScheduler().runTaskTimer(Main.getInstance(), () -> { // sync temperature loop
             for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.isDead()) {
+                    continue;
+                }
                 AdvancedPlayer a = Main.getInstance().getPlayer(p.getUniqueId());
 
                 a.temperature += 0.3;
