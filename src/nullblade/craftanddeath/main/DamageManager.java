@@ -125,7 +125,7 @@ public class DamageManager implements Listener { // to add custom armour with cu
 
             float damageMultiplier = 1 - (((float) Math.min(defence, 15)) / 25) - (((float) Math.min(defence, 140)) / 400);
 
-            double damage = e.getOriginalDamage(EntityDamageEvent.DamageModifier.BASE) * damageMultiplier;
+            double damage = e.getOriginalDamage(EntityDamageEvent.DamageModifier.BASE) * damageMultiplier * 2;
             e.setDamage(0);
             if (l instanceof CraftPlayer) {
                 EntityPlayer p = ((CraftPlayer) l).getHandle();
@@ -147,8 +147,8 @@ public class DamageManager implements Listener { // to add custom armour with cu
                 if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     l.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 * damage), 1));
                 }
-                l.setHealth(l.getHealth() - Math.min(damage, l.getHealth()));
             }
+            l.setHealth(l.getHealth() - Math.min(damage, l.getHealth()));
         }
     }
 
