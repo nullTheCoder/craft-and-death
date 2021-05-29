@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+group 'nullblade'
+version '0.1.4'
+
+jar.destinationDirectory = file(System.getProperty('user.home') + '/testserver/plugins/')
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    implementation 'org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT'
+}
+
+test {
+    useJUnitPlatform()
+}
