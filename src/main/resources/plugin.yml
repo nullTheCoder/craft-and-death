@@ -14,6 +14,11 @@ commands:
     permission: craftAndDeath.recipes
     aliases: [rb, crafts, craft, crafting, recipe, recipes, how_do_i_make_something]
     usage: /<command>
+  customsummon:
+    description: Summons custom entity at player's coordinates
+    permission: craftAndDeath.recipes
+    aliases: [ cs, csummon, entity ]
+    usage: /<command>
 
 permissions:
   craftAndDeath.default:

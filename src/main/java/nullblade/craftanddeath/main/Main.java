@@ -1,5 +1,7 @@
 package nullblade.craftanddeath.main;
 
+import nullblade.craftanddeath.CustomMobs.CommandCustomSummon;
+import nullblade.craftanddeath.CustomMobs.MobManager;
 import nullblade.craftanddeath.content.Content;
 import nullblade.craftanddeath.items.CommandCustomGive;
 import nullblade.craftanddeath.items.ItemEventManager;
@@ -16,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
@@ -59,6 +60,9 @@ public class Main extends JavaPlugin implements Listener {
         new CraftingManager();
 
         new AlloyManager();
+
+        new MobManager();
+        new CommandCustomSummon();
 
         Content.init();
 
