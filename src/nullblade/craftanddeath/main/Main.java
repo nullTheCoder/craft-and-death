@@ -1,5 +1,7 @@
 package nullblade.craftanddeath.main;
 
+import nullblade.craftanddeath.CustomMobs.CommandCustomSummon;
+import nullblade.craftanddeath.CustomMobs.MobManager;
 import nullblade.craftanddeath.content.Content;
 import nullblade.craftanddeath.items.CommandCustomGive;
 import nullblade.craftanddeath.items.ItemEventManager;
@@ -58,6 +60,9 @@ public class Main extends JavaPlugin implements Listener {
         new CraftingManager();
 
         new AlloyManager();
+
+        new MobManager();
+        new CommandCustomSummon();
 
         Content.init();
 

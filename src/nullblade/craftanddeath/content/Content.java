@@ -1,5 +1,7 @@
 package nullblade.craftanddeath.content;
 
+import nullblade.craftanddeath.CustomMobs.MobManager;
+import nullblade.craftanddeath.content.creatures.SoulEater;
 import nullblade.craftanddeath.content.items.*;
 import nullblade.craftanddeath.content.items.armour.noset.LeatherRobe;
 import nullblade.craftanddeath.content.items.armour.sets.iceplatearmour.IcePlateBoots;
@@ -31,5 +33,8 @@ public class Content {
         new IcePlateLeggings();
         new IcePlateChestplate();
         new IcePlateHelmet();
+
+        // mobs
+        MobManager.getInstance().register("soul_eater", SoulEater.class);
     }
 }

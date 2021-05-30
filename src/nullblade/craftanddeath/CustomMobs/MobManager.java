@@ -7,26 +7,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MobManager {
-    private final Map<String, Class<MobClass>> classes;
+    private static MobManager instance;
 
-    private Map<String, MobClass> mobs;
-
-    public MobManager() {
-        classes = new HashMap<>();
+    public static MobManager getInstance() {
+        return instance;
     }
 
-    public void register(String id, Class<MobClass> class_) {
+    private final Map<String, Class<? extends MobClass>> classes;
 
+    private final Map<String, MobClass> mobs;
+
+    public MobManager() {
+        instance = this;
+        classes = new HashMap<>();
+        mobs = new HashMap<>();
+    }
+
+    public void register(String id, Class<? extends MobClass> class_) {
+        classes.put(id, class_);
+    }
+
+    public Map<String, Class<? extends MobClass>> getClasses() {
+        return classes;
     }
 
     public void spawn(Location loc, String id) {
         String sLoc = loc.getWorld().toString() + "_" +  loc.getChunk().getX() + "_" + loc.getChunk().getZ();
         try {
-            classes.get(id).getDeclaredConstructor(Location.class).newInstance(loc);
+            mobs.put(sLoc, classes.get(id).getDeclaredConstructor(Location.class).newInstance(loc));
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
+
+
+
 
 
 }
