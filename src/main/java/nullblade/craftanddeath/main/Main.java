@@ -107,9 +107,9 @@ public class Main extends JavaPlugin implements Listener {
             for (PotionEffect e2 : p.player.getActivePotionEffects()) {
                 p.player.removePotionEffect(e2.getType());
             }
-            Bukkit.getScheduler().runTaskLater(this, () -> {
-                p.player.kickPlayer("§cYou died (you may rejoin now)");
-            }, 1);
+//            Bukkit.getScheduler().runTaskLater(this, () -> {
+//                p.player.kickPlayer("§cYou died (you may rejoin now)");
+//            }, 1);
         }
     }
 }
