@@ -14,8 +14,7 @@ public class EntityPart {
     public EntityLiving base;
     public AtomicBoolean changed = new AtomicBoolean(false);
     public float lastGlobalX, lastGlobalY, lastGlobalZ;
-    public EntityPart[] children = new EntityPart[0];
-    public int sinceLastTp;
+    public boolean rotationChanged = false;
 
     public EntityPart (float x, float y, float z, byte rotX, byte rotY) {
         this.x = x;
@@ -43,5 +42,16 @@ public class EntityPart {
 
     public float getZ() {
         return z;
+    }
+
+    public void rotX(byte degrees) {
+        int r = degrees + rotX;
+        if (r > 128) {
+            r -= 256;
+        } else if (r < -128) {
+            r += 256;
+        }
+        rotX = (byte) r;
+        rotationChanged = true;
     }
 }

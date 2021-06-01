@@ -1,8 +1,11 @@
 package nullblade.craftanddeath.main;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import io.netty.channel.*;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import nullblade.craftanddeath.CustomMobs.MobManager;
 import nullblade.craftanddeath.items.ArmourItem;
 import nullblade.craftanddeath.items.ItemManager;
 import org.bukkit.Bukkit;
@@ -97,8 +100,9 @@ public class AdvancedPlayer {
 
         // saving loop
 
-        loop2 = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::save, 0, 100
-        );
+        loop2 = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::save, 0, 100);
+
+        hell();
     }
 
     public void save() {
@@ -122,5 +126,33 @@ public class AdvancedPlayer {
 
         Bukkit.getScheduler().cancelTask(loop.getTaskId());
         Bukkit.getScheduler().cancelTask(loop2.getTaskId());
+
+        Channel channel = ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel;
+        channel.eventLoop().submit(() -> {
+            channel.pipeline().remove(player.getName());
+            return null;
+        });
+    }
+
+
+    public void hell () {
+        ChannelDuplexHandler handler = new ChannelDuplexHandler() {
+            @Override
+            public void channelRead(ChannelHandlerContext channelHandlerContext, Object packet) throws Exception {
+                if (packet instanceof PacketPlayInUseEntity) {
+                    MobManager.getInstance().handleUse((PacketPlayInUseEntity) packet, player);
+                }
+
+                super.channelRead(channelHandlerContext, packet);
+            }
+
+            @Override
+            public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise channelPromise) throws Exception {
+                super.write(channelHandlerContext, packet, channelPromise);
+            }
+        };
+
+        ChannelPipeline pipeline = ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline();
+        pipeline.addBefore("packet_handler", player.getName(), handler);
     }
 }

@@ -27,6 +27,9 @@ public class MobClass {
         rotX = 0;
     }
 
+    /**
+     * called too many times to use for hard mafs
+     */
     public void update() {}
 
     public void render() {
@@ -38,11 +41,25 @@ public class MobClass {
                 float y_ = p.getY() + y;
                 float z_ = ((cos * p.getX()) + (sin * p.getZ()))+z;
 
-                c.sendPacket(new PacketPlayOutEntity.PacketPlayOutRelEntityMove(p.base.getId(),
-                        (byte) ((x_ * 32) - p.lastGlobalX),
-                        (byte) ((y_ * 32) - p.lastGlobalY),
-                        (byte) ((z_ * 32) - p.lastGlobalZ),
-                        true));
+                if (!p.rotationChanged) {
+                    if ((int)(p.lastGlobalX) != (int)(x_ * 32) || (int)(p.lastGlobalY) != (int)(y_ * 32) || (int)(p.lastGlobalZ) != (int)(z_ * 32))
+                        c.sendPacket(new PacketPlayOutEntity.PacketPlayOutRelEntityMove(p.base.getId(),
+                            (byte) ((x_ * 32) - p.lastGlobalX),
+                            (byte) ((y_ * 32) - p.lastGlobalY),
+                            (byte) ((z_ * 32) - p.lastGlobalZ),
+                            true));
+                } else {
+                    if ((int)(p.lastGlobalX) != (int)(x_ * 32) || (int)(p.lastGlobalY) != (int)(y_ * 32) || (int)(p.lastGlobalZ) != (int)(z_ * 32))
+                        c.sendPacket(new PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook(p.base.getId(),
+                                (byte) ((x_ * 32) - p.lastGlobalX),
+                                (byte) ((y_ * 32) - p.lastGlobalY),
+                                (byte) ((z_ * 32) - p.lastGlobalZ),
+                                p.getRotX(),
+                                p.getRotY(),
+                                true));
+                    else
+                        c.sendPacket(new PacketPlayOutEntity.PacketPlayOutEntityLook(p.base.getId(), p.getRotX(), p.getRotY(), true));
+                }
                 p.lastGlobalX += (byte) ((x_ * 32) - p.lastGlobalX);
                 p.lastGlobalY += (byte) ((y_ * 32) - p.lastGlobalY);
                 p.lastGlobalZ += (byte) ((z_ * 32) - p.lastGlobalZ);
@@ -80,6 +97,14 @@ public class MobClass {
         for (EntityPart p : parts) {
             c.sendPacket(new PacketPlayOutEntityDestroy(p.base.getId()));
         }
+        playersForWhoShowing.remove(c);
+    }
+
+    public void destroyFor(PlayerConnection c) {
+        for (EntityPart p : parts) {
+            c.sendPacket(new PacketPlayOutEntityDestroy(p.base.getId()));
+        }
+        playersForWhoShowing.remove(c);
     }
 
     public void sendEquipment(PlayerConnection c) {
@@ -90,7 +115,21 @@ public class MobClass {
         return new Location(world, x, y, z);
     }
 
-    public void coolKidRotate(float degrees) {
-        
+    public void coolKidsRotate(float degrees) {
+        rotX += degrees;
+        for (EntityPart p : parts) {
+            p.rotX((byte) (-degrees/Math.PI*128));
+        }
+    }
+
+    public void interactedWith (PacketPlayInUseEntity.EnumEntityUseAction useAction, int id, EntityPart entityPart, Player p) {
+
+    }
+
+    /**
+     * called 4 times a second
+     */
+    public void movement() {
+
     }
 }

@@ -72,6 +72,12 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelAllTasks();
+        MobManager.getInstance().removeAll();
+
+        for (Map.Entry<UUID, AdvancedPlayer> e : players.entrySet()) {
+            e.getValue().onLeave();
+            players.remove(e.getKey());
+        }
     }
 
 
@@ -111,9 +117,6 @@ public class Main extends JavaPlugin implements Listener {
             for (PotionEffect e2 : p.player.getActivePotionEffects()) {
                 p.player.removePotionEffect(e2.getType());
             }
-//            Bukkit.getScheduler().runTaskLater(this, () -> {
-//                p.player.kickPlayer("§cYou died (you may rejoin now)");
-//            }, 1);
         }
     }
 }

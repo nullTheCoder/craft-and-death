@@ -1,18 +1,19 @@
 package nullblade.craftanddeath.CustomMobs;
 
+import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
 import nullblade.craftanddeath.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class MobManager {
+public class MobManager  {
     private static MobManager instance;
 
     public static MobManager getInstance() {
@@ -28,7 +29,7 @@ public class MobManager {
         classes = new HashMap<>();
         mobs = new ArrayList<>();
 
-        Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::updateEntityRendering, 0, 2);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), this::updateEntityRendering, 0, 2);
 
     }
 
@@ -49,17 +50,61 @@ public class MobManager {
     }
 
     public void updateEntityRendering() {
-        for (MobClass e : mobs) {
-            Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () ->
-            {
+        try {
+            for (MobClass e : mobs) {
                 e.update();
                 e.render();
-                for (Entity m : e.world.getNearbyEntities(e.toLocation(), 64, 64, 64)) {
+                Collection<Entity> entities = e.world.getNearbyEntities(e.toLocation(), 32, 32, 32);
+                for (Entity m : entities) {
                     if (m instanceof Player) {
                         e.newPlayer((Player) m);
                     }
                 }
-            });
-        }
+                for (PlayerConnection c : e.playersForWhoShowing) {
+                    if (!entities.contains(c.player.getBukkitEntity().getPlayer())) {
+                        e.destroyFor(c);
+                    }
+                }
+            }
+        } catch (ConcurrentModificationException ignored) {}
     }
+
+    public void removeAll() {
+        try {
+            for (MobClass e : mobs) {
+                for (PlayerConnection c : e.playersForWhoShowing) {
+                    e.destroyFor(c);
+                }
+            }
+        } catch (ConcurrentModificationException ignore) { }
+    }
+
+    public void removeFromList(MobClass m) {
+        mobs.remove(m);
+    }
+
+    public void handleUse (PacketPlayInUseEntity u, Player pl) {
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), ()-> {
+            if (u.a(((CraftWorld)pl.getWorld()).getHandle()) != null) {
+                return;
+            }
+
+            try {
+                Field f = u.getClass().getDeclaredField("a");
+                f.setAccessible(true);
+                int id = f.getInt(u);
+                for (MobClass m : mobs) {
+                    for (EntityPart p : m.parts) {
+                        if (p.base.getId() == id) {
+                            m.interactedWith(u.a(), id, p, pl);
+                        }
+                    }
+                }
+
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 }
