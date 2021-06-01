@@ -18,7 +18,7 @@ commands:
     description: Summons custom entity at player's coordinates
     permission: craftAndDeath.recipes
     aliases: [ cs, csummon, entity ]
-    usage: /<command>
+    usage: /<command> <entity>
 
 permissions:
   craftAndDeath.default:
