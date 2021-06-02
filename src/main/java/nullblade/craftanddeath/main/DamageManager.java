@@ -1,6 +1,7 @@
 package nullblade.craftanddeath.main;
 
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import nullblade.craftanddeath.items.ArmourItem;
 import nullblade.craftanddeath.items.ItemManager;
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -156,7 +158,7 @@ public class DamageManager implements Listener { // to add custom armour with cu
 
     public void damage(Entity entity, EntityDamageEvent.DamageCause cause, double dmg) {
         if (entity instanceof Player) {
-            if (((Player)entity).getGameMode() == GameMode.CREATIVE) return;
+            if (((Player)entity).getGameMode() == GameMode.CREATIVE || entity.isDead()) return;
         }
         if (entity instanceof LivingEntity) {
             LivingEntity l = ((LivingEntity) entity);
@@ -206,6 +208,9 @@ public class DamageManager implements Listener { // to add custom armour with cu
                 if (cause == EntityDamageEvent.DamageCause.FALL) {
                     l.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 * damage), 1));
                 }
+
+                p.playerConnection.sendPacket(new PacketPlayOutAnimation(p, 1));
+
             }
             l.setHealth(l.getHealth() - Math.min(damage, l.getHealth()));
         }

@@ -137,8 +137,8 @@ public class SoulProjectile extends MobClass {
                 c.sendPacket(new PacketPlayOutEntityEquipment(parts[5].base.getId(), 4, rg));
                 Bukkit.getScheduler().runTask(Main.getInstance(), () -> MobManager.getInstance().removeFromList(this));
                 Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-                    for (int i = 0; i < parts.length; i++) {
-                        c.sendPacket(new PacketPlayOutEntityDestroy(parts[i].base.getId()));
+                    for (EntityPart part : parts) {
+                        c.sendPacket(new PacketPlayOutEntityDestroy(part.base.getId()));
                     }
                 }, 20);
             }

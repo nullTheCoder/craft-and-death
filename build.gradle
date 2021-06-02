@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'nullblade'
-version '0.1.4'
+version '0.2b'
 
 jar.destinationDirectory = file(System.getProperty('user.home') + '/testserver/plugins/')
 

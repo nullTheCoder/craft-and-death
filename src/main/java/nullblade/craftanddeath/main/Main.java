@@ -3,6 +3,7 @@ package nullblade.craftanddeath.main;
 import nullblade.craftanddeath.CustomMobs.CommandCustomSummon;
 import nullblade.craftanddeath.CustomMobs.MobManager;
 import nullblade.craftanddeath.content.Content;
+import nullblade.craftanddeath.content.creatures.spawning.Spawning;
 import nullblade.craftanddeath.items.CommandCustomGive;
 import nullblade.craftanddeath.items.ItemEventManager;
 import nullblade.craftanddeath.items.ItemManager;
@@ -63,6 +64,8 @@ public class Main extends JavaPlugin implements Listener {
 
         new MobManager();
         new CommandCustomSummon();
+
+        new Spawning();
 
         Content.init();
 
