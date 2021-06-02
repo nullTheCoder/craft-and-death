@@ -129,7 +129,7 @@ public class MobClass {
     /**
      * called 4 times a second
      */
-    public void movement() {
+    public void slowUpdate() {
 
     }
 }

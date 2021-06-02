@@ -44,6 +44,18 @@ public class EntityPart {
         return z;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public void setZ(float z) {
+        this.z = z;
+    }
+
     public void rotX(byte degrees) {
         int r = degrees + rotX;
         if (r > 128) {
@@ -52,6 +64,17 @@ public class EntityPart {
             r += 256;
         }
         rotX = (byte) r;
+        rotationChanged = true;
+    }
+
+    public void rotY(byte degrees) {
+        int r = degrees + rotY;
+        if (r > 128) {
+            r -= 256;
+        } else if (r < -128) {
+            r += 256;
+        }
+        rotY = (byte) r;
         rotationChanged = true;
     }
 }

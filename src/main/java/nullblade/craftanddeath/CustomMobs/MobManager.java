@@ -30,7 +30,7 @@ public class MobManager  {
         mobs = new ArrayList<>();
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), this::updateEntityRendering, 0, 2);
-
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), this::handleSlowUpdate, 0, 5);
     }
 
     public void register(String id, Class<? extends MobClass> class_) {
@@ -88,7 +88,6 @@ public class MobManager  {
             if (u.a(((CraftWorld)pl.getWorld()).getHandle()) != null) {
                 return;
             }
-
             try {
                 Field f = u.getClass().getDeclaredField("a");
                 f.setAccessible(true);
@@ -105,6 +104,14 @@ public class MobManager  {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void handleSlowUpdate () {
+        try {
+            for (MobClass e : mobs) {
+                e.slowUpdate();
+            }
+        } catch (ConcurrentModificationException ignored) {}
     }
 
 }

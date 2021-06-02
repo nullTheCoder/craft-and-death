@@ -4,8 +4,10 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
 import nullblade.craftanddeath.items.ArmourItem;
 import nullblade.craftanddeath.items.ItemManager;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -145,6 +147,63 @@ public class DamageManager implements Listener { // to add custom armour with cu
                 }, (int) (5 * damage) + 15).getTaskId();
 
                 if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                    l.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 * damage), 1));
+                }
+            }
+            l.setHealth(l.getHealth() - Math.min(damage, l.getHealth()));
+        }
+    }
+
+    public void damage(Entity entity, EntityDamageEvent.DamageCause cause, double dmg) {
+        if (entity instanceof Player) {
+            if (((Player)entity).getGameMode() == GameMode.CREATIVE) return;
+        }
+        if (entity instanceof LivingEntity) {
+            LivingEntity l = ((LivingEntity) entity);
+            int defence = 0;
+            for (ItemStack i : l.getEquipment().getArmorContents()) {
+                defence += getDefence(i);
+                defence += i.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
+                if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+                    defence += i.getEnchantmentLevel(Enchantment.PROTECTION_EXPLOSIONS) * 2;
+                } else if (cause == EntityDamageEvent.DamageCause.FALL) {
+                    defence += i.getEnchantmentLevel(Enchantment.PROTECTION_FALL) * 2;
+                } else if (cause == EntityDamageEvent.DamageCause.FIRE || cause == EntityDamageEvent.DamageCause.FIRE_TICK) {
+                    defence += i.getEnchantmentLevel(Enchantment.PROTECTION_FIRE) * 2;
+                } else if (cause == EntityDamageEvent.DamageCause.PROJECTILE) {
+                    defence += i.getEnchantmentLevel(Enchantment.PROTECTION_PROJECTILE) * 2;
+                }
+            }
+
+            if (l.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+                for (PotionEffect po : l.getActivePotionEffects()) {
+                    if (po.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
+                        defence *= 1.2 + (0.2 * po.getAmplifier());
+                    }
+                }
+            }
+
+            float damageMultiplier = 1 - (((float) Math.min(defence, 15)) / 25) - (((float) Math.min(defence, 140)) / 400);
+
+            double damage = dmg * damageMultiplier * 2;
+            if (l instanceof CraftPlayer) {
+                EntityPlayer p = ((CraftPlayer) l).getHandle();
+                float d = (float) Math.min(p.getAbsorptionHearts(), damage);
+                p.setAbsorptionHearts((p.getAbsorptionHearts() - d));
+                damage -= d;
+                l.removePotionEffect(PotionEffectType.BLINDNESS);
+                l.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 200, 1));
+
+                AdvancedPlayer pl = Main.getInstance().getPlayer(p.getUniqueID());
+
+                if (pl.oldTimer != -1) {
+                    Bukkit.getScheduler().cancelTask(pl.oldTimer);
+                }
+                pl.oldTimer = Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+                    l.removePotionEffect(PotionEffectType.BLINDNESS);
+                }, (int) (5 * damage) + 15).getTaskId();
+
+                if (cause == EntityDamageEvent.DamageCause.FALL) {
                     l.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 * damage), 1));
                 }
             }

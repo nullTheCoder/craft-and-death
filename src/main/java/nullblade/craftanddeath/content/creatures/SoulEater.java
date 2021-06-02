@@ -1,5 +1,6 @@
 package nullblade.craftanddeath.content.creatures;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import net.minecraft.server.v1_8_R3.*;
 import nullblade.craftanddeath.CustomMobs.EntityPart;
 import nullblade.craftanddeath.CustomMobs.MobClass;
@@ -14,13 +15,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class SoulEater extends MobClass {
 
-    private Location headingTo;
-    private int targetedRot;
+    private final AtomicReference<Location> headingTo;
+    private final AtomicDouble targetedRot;
+    private int attackState;
+    private int projectilesLeft;
 
     public SoulEater(Location loc) {
         super(loc);
+        headingTo = new AtomicReference<>();
+        targetedRot = new AtomicDouble();
         parts = new EntityPart[10];
 
         WorldServer nmsWorld = ((CraftWorld)loc.getWorld()).getHandle();
@@ -85,21 +92,78 @@ public class SoulEater extends MobClass {
         base.setInvisible(true);
         base.setSmall(true);
         parts[9].base = base;
+
+        projectilesLeft = 4;
     }
     @Override
     public void update() {
         parts[9].rotX((byte) 3);
-        if (headingTo != null) {
-
+        if (headingTo.get() != null) {
+            if (targetedRot.get() > rotX) {
+                rotX += 0.3f;
+            } else if (targetedRot.get() < rotX) {
+                rotX -= 0.3f;
+            }
+            if (headingTo.get().distance(toLocation()) > 5) {
+                x -= Math.sin(rotX) / 2;
+                z -= Math.cos(rotX) / 2;
+                if (headingTo.get().getY() > y) {
+                    parts[0].setY(-1.6f);
+                    parts[1].setY(-1.4f);
+                    parts[2].setY(-1.2f);
+                    parts[3].setY(-1f);
+                    parts[4].setY(-0.8f);
+                    parts[5].setY(-0.6f);
+                    parts[6].setY(-0.4f);
+                    parts[7].setY(-0.2f);
+                    parts[8].setY(0f);
+                    y += 0.2;
+                } else if (headingTo.get().getY() < y) {
+                    parts[0].setY(1.6f);
+                    parts[1].setY(1.4f);
+                    parts[2].setY(1.2f);
+                    parts[3].setY(1f);
+                    parts[4].setY(0.8f);
+                    parts[5].setY(0.6f);
+                    parts[6].setY(0.4f);
+                    parts[7].setY(0.2f);
+                    parts[8].setY(0f);
+                    y -= 0.2;
+                }
+            }
         }
-
     }
     @Override
-    public void movement() {
-        headingTo = null;
+    public void slowUpdate() {
+        headingTo.set(toLocation());
         for (Entity e : world.getNearbyEntities(toLocation(), 18, 18, 18)) {
             if (e instanceof Player) {
-                headingTo = e.getLocation();
+                headingTo.set(e.getLocation());
+                Location toCord = e.getLocation().subtract(toLocation());
+                targetedRot.set(Math.atan2(toCord.getX(), toCord.getZ()) - Math.PI);
+            }
+        }
+        if (headingTo.get() != null && projectilesLeft > 0) {
+            attackState += 1;
+            ItemStack a = CraftItemStack.asNMSCopy(new MaterialData(Material.STAINED_GLASS, (byte)9).toItemStack(1));
+            ItemStack b = CraftItemStack.asNMSCopy(new MaterialData(Material.STAINED_GLASS, (byte)10).toItemStack(1));
+            for (PlayerConnection c : playersForWhoShowing) {
+                if (attackState == 1) {
+                    c.sendPacket(new PacketPlayOutEntityEquipment(parts[8].base.getId(), 4, a));
+                }
+                c.sendPacket(new PacketPlayOutEntityEquipment(parts[attackState-1].base.getId(), 4, a));
+                c.sendPacket(new PacketPlayOutEntityEquipment(parts[attackState].base.getId(), 4, b));
+            }
+            if (attackState == 8) {
+                projectilesLeft -= 1;
+                attackState = 0;
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> MobManager.getInstance().spawn(toLocation(), "soul_projectile"));
+                if (projectilesLeft == 0) {
+                    ItemStack gw = CraftItemStack.asNMSCopy(new MaterialData(Material.WOOL, (byte)13).toItemStack(1));
+                    for (PlayerConnection c : playersForWhoShowing){
+                        c.sendPacket(new PacketPlayOutEntityEquipment(parts[9].base.getId(), 4, gw));
+                    }
+                }
             }
         }
     }

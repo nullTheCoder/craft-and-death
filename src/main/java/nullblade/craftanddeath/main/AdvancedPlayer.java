@@ -83,7 +83,7 @@ public class AdvancedPlayer {
                     a.effectLoop(this);
                 }
             }
-        }, 0, 3
+        }, 0, 4
         );
 
 
