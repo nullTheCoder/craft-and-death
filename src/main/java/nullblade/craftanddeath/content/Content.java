@@ -23,6 +23,7 @@ public class Content {
         new IceChunk();
         new IcePlate();
         new IceBottle();
+        new SoulFragment();
 
         // usable items
         new Thermometer();

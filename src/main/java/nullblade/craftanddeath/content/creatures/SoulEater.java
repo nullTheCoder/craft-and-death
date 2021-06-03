@@ -5,6 +5,7 @@ import net.minecraft.server.v1_8_R3.*;
 import nullblade.craftanddeath.CustomMobs.EntityPart;
 import nullblade.craftanddeath.CustomMobs.MobClass;
 import nullblade.craftanddeath.CustomMobs.MobManager;
+import nullblade.craftanddeath.items.ItemManager;
 import nullblade.craftanddeath.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -200,8 +201,15 @@ public class SoulEater extends MobClass {
                 Bukkit.getScheduler().runTask(Main.getInstance(), () -> MobManager.getInstance().removeFromList(this));
                 for (int i = 0 ; i < parts.length ; i++) {
                     int finalI = i;
-                    Bukkit.getScheduler().runTaskLater(Main.getInstance(), () ->
-                    c.sendPacket(new PacketPlayOutEntityDestroy(parts[finalI].base.getId())), i * 2L
+                    float sin = (float) Math.sin(rotX);
+                    float cos = (float) Math.cos(rotX);
+                    Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+                        c.sendPacket(new PacketPlayOutEntityDestroy(parts[finalI].base.getId()));
+                        float x_ = ((sin * parts[finalI].getX()) + (cos * parts[finalI].getZ()))+x;
+                        float y_ = parts[finalI].getY() + y;
+                        float z_ = ((cos * parts[finalI].getX()) + (sin * parts[finalI].getZ()))+z;
+                        world.dropItem(new Location(world, x_, y_, z_), ItemManager.getInstance().get("soul_fragment"));
+                    }, i * 2L
                     );
                 }
             }

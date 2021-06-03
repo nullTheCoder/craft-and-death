@@ -5,6 +5,7 @@ import net.minecraft.server.v1_8_R3.*;
 import nullblade.craftanddeath.CustomMobs.EntityPart;
 import nullblade.craftanddeath.CustomMobs.MobClass;
 import nullblade.craftanddeath.CustomMobs.MobManager;
+import nullblade.craftanddeath.items.ItemManager;
 import nullblade.craftanddeath.main.DamageManager;
 import nullblade.craftanddeath.main.Main;
 import nullblade.craftanddeath.main.Util;
@@ -140,6 +141,7 @@ public class SoulProjectile extends MobClass {
                     for (EntityPart part : parts) {
                         c.sendPacket(new PacketPlayOutEntityDestroy(part.base.getId()));
                     }
+                    world.dropItem(toLocation(), ItemManager.getInstance().get("soul_fragment"));
                 }, 20);
             }
         }
